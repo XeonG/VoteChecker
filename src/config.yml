@@ -1,0 +1,10 @@
+#Votechecker
+
+mysql:
+    server: "127.0.0.1"
+    database: "database"
+    table: "votes"
+    username: "username"
+    password: "password"
+
+update_interval_minutes: 180

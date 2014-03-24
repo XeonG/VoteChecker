@@ -1,0 +1,27 @@
+name: VoteReminder
+version: 0.99
+main: me.Koolio.VoteReminder.Main
+description: Reminds players of when they can vote again
+
+commands:
+    votecheck:
+        description: self check votes
+        usage: |
+           /<command> disable - disables the votecheck notice.
+           /<command> enable - enables the votecheck notice.
+           /<command> interval - check the interval.
+           /<command> stop - stops the votecheck.
+        
+permissions:
+    votecheck.all:
+        description: Force votecheck on all players.
+        default: op
+    votecheck.stop:
+        description: Force stop scheduled votechecks.
+        default: op
+    votecheck.help:
+        description: Shows admin commands in help section.
+        default: op
+    votecheck.votecheck.setinterval:
+        description: Change scheduled interval in minutes.
+        default: op
