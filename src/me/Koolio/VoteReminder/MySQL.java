@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-//import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -16,95 +15,63 @@ import java.util.TreeSet;
 import org.bukkit.ChatColor;
 
 import org.bukkit.command.CommandSender;
-//import org.bukkit.entity.Player;
-//import org.bukkit.plugin.Plugin;
-//import java.util.logging.Level;
 
 public class MySQL {
 
-	// protected Plugin plugin;
-
 	public void CheckVotes(CommandSender target, String server, String database, String table, String username, String password) {
-		// public void CheckVotes(Player target, String server, String database,
-		// String table, String username, String password){
+		
 		Connection con = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 
 		String url = "jdbc:mysql://" + server + ":3306/" + database + "?allowMultiQueries=true";
-
-		// Object sender = playername;
-		// Player p = (playername) sender;
-
-		// Object target = playername;
-		// String playername = target.getName();
-
 		String playerName = target.getName().toString();
-
-		// sender.sendMessage(ChatColor.GREEN+" " + url);
-		// sender.sendMessage(ChatColor.GREEN+" " + playername);
-//String mcServers[] = {"PlanetMinecraft.com","minestatus","MinecraftServers.org","TopG.org","MCSL"};
-
-		//String mcServersListed[] = {};
-//String outputMessage[] = {};
 
 HashMap<String, Integer> serverlisted = new HashMap<String, Integer>();
 serverlisted.put("PlanetMinecraft.com", 0);
 serverlisted.put("Minestatus", 0);
 serverlisted.put("MinecraftServers.org", 0);
-//serverlisted.put("MCSL", 0);
 serverlisted.put("TopG.org", 0);
 
 		try {
 
 			con = DriverManager.getConnection(url, username, password);
-			// pst = con.prepareStatement("SELECT * FROM Authors");
+			
 			String query = "SELECT id, fromsite, username, address, UNIX_TIMESTAMP() - UNIX_TIMESTAMP(timestamp) AS seconds_ago FROM `"+ table+ "` WHERE username = '"+ playerName+ "' AND fromsite = 'PlanetMinecraft.com' ORDER BY `votes`.`timestamp` DESC LIMIT 0 , 1;"
 					+ "SELECT id, fromsite, username, address, UNIX_TIMESTAMP() - UNIX_TIMESTAMP(timestamp) AS seconds_ago FROM `"+ table+ "` WHERE username = '"+ playerName+ "' AND fromsite = 'Minestatus' ORDER BY `votes`.`timestamp` DESC LIMIT 0 , 1;"
 					+ "SELECT id, fromsite, username, address, UNIX_TIMESTAMP() - UNIX_TIMESTAMP(timestamp) AS seconds_ago FROM `"+ table+ "` WHERE username = '"+ playerName+ "' AND fromsite = 'MinecraftServers.org' ORDER BY `votes`.`timestamp` DESC LIMIT 0 , 1;"
 					+ "SELECT id, fromsite, username, address, UNIX_TIMESTAMP() - UNIX_TIMESTAMP(timestamp) AS seconds_ago FROM `"+ table+ "` WHERE username = '"+ playerName+ "' AND fromsite = 'MCSL' ORDER BY `votes`.`timestamp` DESC LIMIT 0 , 1;"
 					+ "SELECT id, fromsite, username, address, UNIX_TIMESTAMP() - UNIX_TIMESTAMP(timestamp) AS seconds_ago FROM `"+ table+ "` WHERE username = '"+ playerName+ "' AND fromsite = 'TopG.org' ORDER BY `votes`.`timestamp` DESC LIMIT 0 , 1";
 
-			// String queryOrig = "SELECT id, fromsite, username, address, UNIX_TIMESTAMP() - UNIX_TIMESTAMP(timestamp) AS seconds_ago FROM `"+table+"` WHERE username = '"+playerName+"' AND fromsite = 'PlanetMinecraft.com' ORDER BY `votes`.`timestamp` DESC LIMIT 0";
-			// pst = con.prepareStatement(queryOrig);
 
 			pst = con.prepareStatement(query);
-
-			// rs = pst.executeQuery();
 
 			boolean isResult = pst.execute();
 
 			
-			do { // remove multi
-				rs = pst.getResultSet();// remove multi
+			do { 
+				rs = pst.getResultSet();
 
-				// ResultSetMetaData meta = rs.getMetaData();
-				// String colname1 = meta.getColumnName(1);
-				// String colname2 = meta.getColumnName(2);
-				// target.sendMessage(ChatColor.GREEN +" "+ colname1+" " +
-				// colname2);
 
-				if (!rs.first() && !rs.next())// if first and next records are empty
+				if (!rs.first() && !rs.next())
 				{
-					//target.sendMessage(ChatColor.RED + "Not voted here yet " + playerName);
+					
 				} else {
 					
 					rs.previous(); // go back in result order so rs.next sees the first result.
 
 					while (rs.next()) {
-						// String id = rs.getString(1);
-						String fromSite = rs.getString(2);
-						// String playname = rs.getString(3);
-						// String ipAddress = rs.getString(4);
 						
-						int timeStamp = Integer.parseInt(rs.getString(5)); // seconds_ago
+						String fromSite = rs.getString(2);
+						
+						int timeStamp = Integer.parseInt(rs.getString(5)); 
 						
 						serverlisted.remove(fromSite);
 						serverlisted.put(fromSite, timeStamp);
 						} 
 					}
-				isResult = pst.getMoreResults(); // remove multi
-			} while (isResult); // remove multi
+				isResult = pst.getMoreResults(); 
+			} while (isResult); 
 			
 			target.sendMessage(ChatColor.DARK_GRAY + "-------------"+ChatColor.GRAY +"[/votecheck help]"+ChatColor.DARK_GRAY +"-------------");
 			
@@ -113,38 +80,26 @@ serverlisted.put("TopG.org", 0);
 				    Integer value = entry.getValue();
 					// 86400 seconds = 24hrs
 						   if (value >= 1 && value <= 86400) {
-				           //  target.sendMessage(ChatColor.YELLOW + " " + key + " " + value);
+				         
 				             target.sendMessage(ChatColor.DARK_GREEN + "Thanks for voting here: " +ChatColor.GREEN+ getVotesite(key));
 				             target.sendMessage(ChatColor.DARK_PURPLE + "-You last voted: " +ChatColor.DARK_GRAY+ " " + timeSince(value));
 						    }
 						   if (value >= 86400) {
-					           // target.sendMessage(ChatColor.GREEN + " " + key + " " + value);
-							    	target.sendMessage(ChatColor.GOLD + "Please can you vote here: "+ ChatColor.YELLOW+ getVotesite(key));
+					              	target.sendMessage(ChatColor.GOLD + "Please can you vote here: "+ ChatColor.YELLOW+ getVotesite(key));
 							    	target.sendMessage(ChatColor.DARK_PURPLE + "-You last voted over: " +ChatColor.DARK_GRAY+ " " + timeSince(value));
 							    }
-						   
-						  /*   if (value == 0) {
-						           //   target.sendMessage(ChatColor.RED + " " + key + " " + value);
-						     target.sendMessage(ChatColor.RED + "Not voted here " + getVotesite(key) + " " + value);
-							 }*/
-			}
+					}
 			
-			//seperate loop to show not voted at sites last in red
 			for(Entry<String, Integer> entry : serverlisted.entrySet()) {
 			    String key = entry.getKey();
 			    Integer value = entry.getValue();
 			 
 			     if (value == 0) {
-			           //   target.sendMessage(ChatColor.RED + " " + key + " " + value);
-			     target.sendMessage(ChatColor.RED + "-You have never voted here: " +ChatColor.DARK_PURPLE+ getVotesite(key));
+			          target.sendMessage(ChatColor.RED + "-You have never voted here: " +ChatColor.DARK_PURPLE+ getVotesite(key));
 				 }
 			  
 			}
 		
-			
-			//You can vote here: kraftzone.net/planetmc
-			//Last voted at minestatus 4days 2hrs ago
-
 		} catch (SQLException ex) {
 		
 			Main.printlnfx(ChatColor.RED + " " + ex.toString());
@@ -164,8 +119,6 @@ serverlisted.put("TopG.org", 0);
 
 			} catch (SQLException ex) {
 				Main.printlnfx(ChatColor.YELLOW + " " + ex.toString());
-				// plugin.getLogger().log(Level.SEVERE, ex.toString());
-
 			}
 		}
 	}

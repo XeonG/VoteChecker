@@ -1,25 +1,17 @@
 package me.Koolio.VoteReminder;
 
-//import java.util.HashMap;
-//import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-//import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin implements Listener {
 
-	// private HashMap<OfflinePlayer, Boolean> voteCheck = new
-	// HashMap<OfflinePlayer, Boolean>();
 	MyConfigManager manager;
 	MyConfig PlayerSettings;
 
@@ -31,23 +23,10 @@ public class Main extends JavaPlugin implements Listener {
 	public Integer update_interval_minutes = 60;
 	public int id = 0;
 
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent e) {
-		Player p = e.getPlayer();
-		p.sendMessage(ChatColor.GREEN + "Hi");
-	}
-
-	public static void printlnfx(String message) {
-		Server server = Bukkit.getServer();
-		ConsoleCommandSender console = server.getConsoleSender();
-		console.sendMessage(message);
-	}
 
 	public void onEnable() {
 
-		// getConfig().options().copyDefaults(true);
-		// saveConfig();
-		saveDefaultConfig(); // saves commends from config.yml
+		saveDefaultConfig();
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 
 		server = getConfig().getString("mysql.server");
@@ -68,11 +47,9 @@ public class Main extends JavaPlugin implements Listener {
 					}
 				}, 60 * 20 /* ~1mins */,20 * 60 * update_interval_minutes);
 
-		/* List<String> s = getConfig().getStringList("voteCheck"); for (String str : s){ String[] words = str.split(":"); } */
 	}
 
 	public void onDisable() {
-		/* List<String> s = getConfig().getStringList("voteCheck"); for (OfflinePlayer p : voteCheck.keySet()){ //s.add(p.getName() = ":" + "true"); } */
 		Bukkit.getServer().getScheduler().cancelTask(id);
 	}
 
@@ -81,8 +58,6 @@ public class Main extends JavaPlugin implements Listener {
 	public boolean onCommand(CommandSender sender, Command cmd, String commandlevel, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("votecheck")) {
 			if (args.length == 0) {
-				// self check
-				// sender.sendMessage(ChatColor.GREEN+"Use '/votecheck help' to see sub-commands");
 				my.CheckVotes(sender, server, database, table, username,password);
 				return true;
 			}
@@ -180,20 +155,12 @@ public class Main extends JavaPlugin implements Listener {
 		for (Player player : onlinePlayers) {
 
 			playertf = PlayerSettings.getBoolean("VoteCheckDisabled." + player.getName());
-			// Main.printlnfx(ChatColor.RED + " " +
-			// player.getName()+" "+String.valueOf(playertf));
-
 			if (playertf == false) {
 				my.CheckVotes(player, server, database, table, username, password);
 			} else {
-				//String playerName = player.getName();
-				player.sendMessage(ChatColor.YELLOW +"You have scheduled votecheck disabled: /votecheck enable");
+			player.sendMessage(ChatColor.YELLOW +"You have scheduled votecheck disabled: /votecheck enable");
 			}
 		}
-		// String playerName = player.getName();
-		// Player target = Bukkit.getServer().getPlayer(playerName);
-		// player.sendMessage(ChatColor.GREEN+"Done! "+playerName);
-
 	}
 
 	public static boolean isInteger(String str) {
@@ -238,4 +205,9 @@ public class Main extends JavaPlugin implements Listener {
 		sender.sendMessage(ChatColor.GREEN + sender.getName().toString() + " votechecker settings reloaded!");
 	}
 
+	public static void printlnfx(String message) {
+		Server server = Bukkit.getServer();
+		ConsoleCommandSender console = server.getConsoleSender();
+		console.sendMessage(message);
+	}
 }
