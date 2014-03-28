@@ -1,6 +1,6 @@
 name: VoteReminder
 version: 0.99
-main: me.Koolio.VoteReminder.Main
+main: me.Koolio.VoteChecker.Main
 description: Reminds players of when they can vote again
 
 commands:
@@ -11,6 +11,10 @@ commands:
            /<command> enable - enables the votecheck notice.
            /<command> interval - check the interval.
            /<command> stop - stops the votecheck.
+    total:
+        description: self check stats
+        usage: |
+           /<command> - check stats.
         
 permissions:
     votecheck.all:

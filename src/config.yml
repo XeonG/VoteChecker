@@ -8,3 +8,5 @@ mysql:
     password: "password"
 
 update_interval_minutes: 180
+sites:
+  - VotingSite^ShortURL
