@@ -9,4 +9,4 @@ mysql:
 
 update_interval_minutes: 180
 sites:
-  - VotingSite^ShortURL
+  - VotingSite^VotingSiteShortName^ShortURL

@@ -1,8 +1,7 @@
 package me.Koolio.VoteChecker;
 
-//import java.util.ArrayList;
-import java.util.List;
 
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -27,6 +26,7 @@ public class Main extends JavaPlugin implements Listener {
 	public int id = 0;
 	public String[] VotesFrom;
 	public String[] ForSites;
+	public String[] Shortname;
 	
 	ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 
@@ -50,15 +50,17 @@ public class Main extends JavaPlugin implements Listener {
 		
 		VotesFrom = new String[votingsites.size()];
 		ForSites = new String[votingsites.size()];
+		Shortname = new String[votingsites.size()];
 		   
 		for (int x = 0; x < votingsites.size(); x++) {
-			// - PlanetMinecraft.com^http://kraftzone.net/planetmc
+			// - PlanetMinecraft.com^PlanetMC^http://kraftzone.net/planetmc
 			String[] parts = votingsites.get(x).split("\\^");
-			if (parts.length != 2) {
+			if (parts.length != 3) {
 				console.sendMessage(ChatColor.RED + votingsites.get(x).toString()+" not in correct format");
 			} else {
-				VotesFrom[x] = parts[0];
-				ForSites[x] = parts[1];
+				VotesFrom[x] = parts[0];//PlanetMinecraft.com
+				Shortname[x] = parts[1];//PlanetMC
+				ForSites[x] = parts[2];//http://kraftzone.net/planetmc
 				//console.sendMessage(ChatColor.GREEN + VotesFrom[x]+" "+ForSites[x]);
 			}
 		}
@@ -67,7 +69,8 @@ public class Main extends JavaPlugin implements Listener {
 		for (String s : votingsites) {
 			String[] parts = s.split("\\^");
 			VotesFrom[i] = parts[0]; // PlanetMinecraft.com
-			ForSites[i] = parts[1]; // http://kraftzone.net/planetmc
+			Shortname[x] = parts[1];//PlanetMC
+			ForSites[x] = parts[2];//http://kraftzone.net/planetmc
 			//console.sendMessage(ChatColor.YELLOW + s);
 			//console.sendMessage(ChatColor.YELLOW + VotesFrom[i]+" "+ForSites[i]);
 			i++;
@@ -87,18 +90,19 @@ public class Main extends JavaPlugin implements Listener {
 		Bukkit.getServer().getScheduler().cancelTask(id);
 	}
 	
-	MySQL my = new MySQL();
+	
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandlevel, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("total")) {
 			if (args.length == 0) {
-				my.CheckStats(sender, null, VotesFrom, mySQL_address, mySQL_database, mySQL_table, mySQL_username, mySQL_password);
+				MySQL my = new MySQL();
+				my.CheckStats(sender, null, VotesFrom, Shortname, ForSites, mySQL_address, mySQL_database, mySQL_table, mySQL_username, mySQL_password);
 				return true;
 			}
 			if(args.length == 1){
 				String playername = args[0];
-
-				my.CheckStats(sender, playername, VotesFrom, mySQL_address, mySQL_database, mySQL_table, mySQL_username, mySQL_password);
+				MySQL my = new MySQL();
+				my.CheckStats(sender, playername, VotesFrom, Shortname, ForSites, mySQL_address, mySQL_database, mySQL_table, mySQL_username, mySQL_password);
 				return true;
 			}
 			
@@ -106,7 +110,8 @@ public class Main extends JavaPlugin implements Listener {
 			
 		if (cmd.getName().equalsIgnoreCase("votecheck")) {
 			if (args.length == 0) {
-				my.CheckVotes(sender, null, VotesFrom, mySQL_address, mySQL_database, mySQL_table, mySQL_username,mySQL_password);
+				MySQL my = new MySQL();
+				my.CheckVotes(sender, null, VotesFrom, Shortname, ForSites, mySQL_address, mySQL_database, mySQL_table, mySQL_username,mySQL_password);
 				return true;
 			}
 			if (args.length >= 1) {
@@ -205,7 +210,8 @@ public class Main extends JavaPlugin implements Listener {
 
 			playertf = PlayerSettings.getBoolean("VoteCheckDisabled." + player.getName());
 			if (playertf == false) {
-				my.CheckVotes(player, null, VotesFrom, mySQL_address, mySQL_database, mySQL_table, mySQL_username, mySQL_password);
+				MySQL my = new MySQL();
+				my.CheckVotes(player, null, VotesFrom, Shortname, ForSites, mySQL_address, mySQL_database, mySQL_table, mySQL_username, mySQL_password);
 			} else {
 			player.sendMessage(ChatColor.YELLOW +"You have scheduled votecheck disabled: /votecheck enable");
 			}
